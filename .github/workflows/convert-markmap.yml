@@ -1,4 +1,4 @@
-name: Convert Markmap Files
+name: Convert Markmap Files to Jekyll Posts
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
       - 'markmaps/**/*.md'
 
 jobs:
-  build:
+  convert:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -21,7 +21,7 @@ jobs:
       - name: Install Markmap CLI
         run: npm install -g markmap-cli
 
-      - name: Convert Markdown to Markmap HTML
+      - name: Convert Markdown to Markmap HTML posts
         run: |
           mkdir -p _posts
           for file in markmaps/*.md; do
@@ -29,17 +29,22 @@ jobs:
             today=$(date +%Y-%m-%d)
             outfile="_posts/${today}-${base}.html"
 
+            # Generate the markmap HTML
             markmap "$file" -o "$outfile"
 
-            # Add front matter
-            sed -i '1i\
----\
-layout: post\
-title: "'$base'"\
-categories: [markmap]\
-tags: [mindmap]\
----\
-' "$outfile"
+            # Save original content
+            content=$(cat "$outfile")
+
+            # Add Jekyll front matter and overwrite
+            printf "%s\n" \
+              "---" \
+              "layout: post" \
+              "title: \"${base//-/ }\"" \
+              "categories: [markmap]" \
+              "tags: [mindmap]" \
+              "---" \
+              "" \
+              "$content" > "$outfile"
           done
 
       - name: Commit and push generated posts
@@ -47,5 +52,5 @@ tags: [mindmap]\
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add _posts/
-          git commit -m "Auto-generate Markmap post(s)" || echo "No changes"
+          git commit -m "Auto-generate Markmap post(s)" || echo "No changes to commit"
           git push
