@@ -1,4 +1,4 @@
-name: Convert Markmap Files to Jekyll Posts
+name: Convert Markmap Files to Jekyll Posts (iframe version)
 
 on:
   push:
@@ -24,25 +24,22 @@ jobs:
           node-version: '20'
 
       - name: Install Markmap CLI
-        run: |
-          npm install -g markmap-cli
-          markmap --version
+        run: npm install -g markmap-cli
 
-      - name: Convert Markdown to Markmap HTML posts
+      - name: Convert Markdown to Markmap iframe posts
         run: |
-          mkdir -p _posts
+          mkdir -p assets/markmaps _posts
+          today=$(date +%Y-%m-%d)
+
           for file in markmaps/*.md; do
             base=$(basename "$file" .md)
-            today=$(date +%Y-%m-%d)
-            outfile="_posts/${today}-${base}.html"
+            mapfile="assets/markmaps/${base}.html"
+            postfile="_posts/${today}-${base}.md"
 
-            # Generate the markmap HTML
-            markmap "$file" -o "$outfile"
+            # Generate markmap HTML file
+            markmap "$file" -o "$mapfile"
 
-            # Save original content
-            content=$(cat "$outfile")
-
-            # Add Jekyll front matter and overwrite
+            # Create iframe post
             printf "%s\n" \
               "---" \
               "layout: post" \
@@ -51,7 +48,7 @@ jobs:
               "tags: [mindmap]" \
               "---" \
               "" \
-              "$content" > "$outfile"
+              "<iframe src=\"/{{ site.baseurl }}/assets/markmaps/${base}.html\" width=\"100%%\" height=\"600\" style=\"border: none;\"></iframe>" > "$postfile"
           done
 
       - name: Wait for existing GitHub Pages deployment to complete
@@ -84,10 +81,10 @@ jobs:
             fi
           done
 
-      - name: Commit and push generated posts
+      - name: Commit and push generated posts and markmap HTML
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add _posts/
-          git commit -m "Auto-generate Markmap post(s)" || echo "No changes to commit"
+          git add _posts/ assets/markmaps/
+          git commit -m "Auto-generate Markmap iframe post(s)" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:main
