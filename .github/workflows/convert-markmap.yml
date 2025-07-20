@@ -54,6 +54,36 @@ jobs:
               "$content" > "$outfile"
           done
 
+      - name: Wait for existing GitHub Pages deployment to complete
+        run: |
+          echo "Waiting for any in-progress GitHub Pages deployments..."
+          for i in {1..30}; do
+            deployments=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" \
+              https://api.github.com/repos/${{ github.repository }}/deployments)
+
+            latest_deployment_id=$(echo "$deployments" | jq '.[0].id')
+
+            statuses=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" \
+              https://api.github.com/repos/${{ github.repository }}/deployments/${latest_deployment_id}/statuses)
+
+            state=$(echo "$statuses" | jq -r '.[0].state')
+
+            echo "Current deployment status: $state"
+
+            if [[ "$state" == "in_progress" || "$state" == "queued" ]]; then
+              echo "Deployment in progress... waiting 10s"
+              sleep 10
+            else
+              echo "No deployment in progress. Continuing."
+              break
+            fi
+
+            if [[ $i -eq 30 ]]; then
+              echo "Timed out waiting for deployment to finish."
+              exit 1
+            fi
+          done
+
       - name: Commit and push generated posts
         run: |
           git config user.name "github-actions"
