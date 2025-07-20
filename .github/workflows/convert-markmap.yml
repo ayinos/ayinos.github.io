@@ -1,0 +1,51 @@
+name: Convert Markmap Files
+
+on:
+  push:
+    paths:
+      - 'markmaps/**/*.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Markmap CLI
+        run: npm install -g markmap-cli
+
+      - name: Convert Markdown to Markmap HTML
+        run: |
+          mkdir -p _posts
+          for file in markmaps/*.md; do
+            base=$(basename "$file" .md)
+            today=$(date +%Y-%m-%d)
+            outfile="_posts/${today}-${base}.html"
+
+            markmap "$file" -o "$outfile"
+
+            # Add front matter
+            sed -i '1i\
+---\
+layout: post\
+title: "'$base'"\
+categories: [markmap]\
+tags: [mindmap]\
+---\
+' "$outfile"
+          done
+
+      - name: Commit and push generated posts
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add _posts/
+          git commit -m "Auto-generate Markmap post(s)" || echo "No changes"
+          git push
