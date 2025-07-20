@@ -10,8 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository with write access
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set safe Git directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -19,7 +24,9 @@ jobs:
           node-version: '20'
 
       - name: Install Markmap CLI
-        run: npm install -g markmap-cli
+        run: |
+          npm install -g markmap-cli
+          markmap --version
 
       - name: Convert Markdown to Markmap HTML posts
         run: |
@@ -47,10 +54,10 @@ jobs:
               "$content" > "$outfile"
           done
 
-      - name: Commit and push generated posts
+       - name: Commit and push generated posts
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add _posts/
           git commit -m "Auto-generate Markmap post(s)" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:main
