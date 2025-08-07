@@ -1,8 +1,8 @@
 ---
 title: Find duplicate elements in a list
 date: 2025-07-19 10:43:20 +/-TTTT
-categories: [Java, Stream operations]
-tags: [java8,stream,list]     # TAG names should always be lowercase
+categories: [Java, Stream API]
+tags: [java8,stream,list,set,filter]     # TAG names should always be lowercase
 ---
 
 ## Solution 1: Use a set
@@ -32,11 +32,10 @@ HashSet<String> duplicateColors =
 ```
 
 ## Solution 3: Use Collections.frequency()
-### Collections.frequency()
-#### Parameters: 
-Collections.frequency() takes two parameters:
-1. The collection in which to search for the element.
-2. The object whose frequency is to be determined.
+#### Function : Collections.frequency()
+#### Parameters:
+1. The collection in which to search for the element (colors).
+2. The object whose frequency is to be determined (color).
 #### Return value:
 The method returns an int representing the total count of elements in the collection that are equal to the specified object.
 
