@@ -16,7 +16,7 @@ HashSet<String> duplicateColors =
   .collect(Collectors.toSet()); //collect into a set.
 ```
 
-## Solution 2: Use a hashmap & frequency count
+## Solution 2: Use a hashmap to store the frequency
 ```java
 List<String> colors = List.of("Red", "Blue", "Green", "Blue", "Purple", "Green");
 HashSet<String> duplicateColors = 
@@ -31,7 +31,7 @@ HashSet<String> duplicateColors =
 
 ```
 
-## Solution 3: Use Collections.frequency()
+## Solution 3: Use Collections.frequency() to find the frequency.
 #### Function : Collections.frequency()
 #### Parameters:
 1. The collection in which to search for the element (colors).
