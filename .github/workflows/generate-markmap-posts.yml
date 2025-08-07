@@ -3,7 +3,7 @@ name: Generate Markmap Posts
 on:
   push:
     paths:
-      - 'markmap/*.md'
+      - 'markmaps/*.md'
 
 jobs:
   build:
