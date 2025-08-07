@@ -38,24 +38,21 @@ jobs:
             date=$(date +%Y-%m-%d)
             filename="${date}-${file}.html"
 
-            cat <<EOF > "_posts/$filename"
----
-layout: post
-title: "$title"
-date: $date
----
+            echo "---" > "_posts/$filename"
+            echo "layout: post" >> "_posts/$filename"
+            echo "title: \"$title\"" >> "_posts/$filename"
+            echo "date: $date" >> "_posts/$filename"
+            echo "---" >> "_posts/$filename"
+            echo "" >> "_posts/$filename"
+            echo "<iframe src=\"{{ site.baseurl }}/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>" >> "_posts/$filename"
+          done
 
-  <iframe src="{{ site.baseurl }}/assets/markmaps/${file}.html" width="100%" height="600" style="border:none;"></iframe>
-
-  EOF
-  done
-
-- name: Commit and push changes
-  run: |
-    git config user.name "github-actions"
-    git config user.email "github-actions@github.com"
-    git add assets/markmaps _posts
-    git diff-index --quiet HEAD || git commit -m "Auto-generate Markmap post(s)"
-    git push
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add assets/markmaps _posts
+          git diff-index --quiet HEAD || git commit -m "Auto-generate Markmap post(s)"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
