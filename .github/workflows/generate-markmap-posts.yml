@@ -1,0 +1,61 @@
+name: Generate Markmap Posts
+
+on:
+  push:
+    paths:
+      - 'markmap/*.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markmap-cli
+        run: npm install -g markmap-cli
+
+      - name: Generate HTML mindmaps
+        run: |
+          mkdir -p assets/markmaps
+          for file in markmap/*.md; do
+            name=$(basename "$file" .md)
+            markmap "$file" -o "assets/markmaps/$name.html"
+          done
+
+      - name: Create Jekyll posts with iframes
+        run: |
+          mkdir -p _posts
+          for filepath in markmap/*.md; do
+            file=$(basename "$filepath" .md)
+            title=$(echo "$file" | sed -E 's/[-_]/ /g' | sed 's/\b\(.\)/\u\1/g')
+            date=$(date +%Y-%m-%d)
+            filename="${date}-${file}.html"
+
+            cat <<EOF > "_posts/$filename"
+---
+layout: post
+title: "$title"
+date: $date
+---
+
+  <iframe src="{{ site.baseurl }}/assets/markmaps/${file}.html" width="100%" height="600" style="border:none;"></iframe>
+
+  EOF
+  done
+
+- name: Commit and push changes
+  run: |
+    git config user.name "github-actions"
+    git config user.email "github-actions@github.com"
+    git add assets/markmaps _posts
+    git diff-index --quiet HEAD || git commit -m "Auto-generate Markmap post(s)"
+    git push
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
