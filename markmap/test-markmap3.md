@@ -1,4 +1,4 @@
-# Mind Map Title
+# Mind Map Title 3
 
 ## Branch 1
 - Point A
