@@ -1,4 +1,4 @@
-name: Generate Markmap Posts
+name: Generate Markmap Posts from Markdown
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
           mkdir -p _posts
           for filepath in markmap/*.md; do
             file=$(basename "$filepath" .md)
-            title=$(echo "$file" | sed -E 's/[-_]/ /g' | sed 's/\b\(.\)/\u\1/g')
+            title=$(echo "$file" | tr '-_' ' ' | sed -E 's/(^| )([a-z])/\U\2/g')
             date=$(date +%Y-%m-%d)
             filename="${date}-${file}.html"
 
