@@ -55,7 +55,7 @@ jobs:
                 echo "date: $date"
                 echo "---"
                 echo ""
-                echo "<iframe src=\"{{ site.baseurl }}/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>"
+                echo "<iframe src=\"/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>"
               } | tee "$postpath"
               echo "Generated post for $file at $postpath"
             else
