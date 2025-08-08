@@ -55,8 +55,7 @@ jobs:
           fi
           done
 
-
-- name: Wait for GitHub Pages to finish current deployment
+      - name: Wait for GitHub Pages to finish current deployment
         run: |
           echo "Checking latest GitHub Pages deployment status..."
           while true; do
