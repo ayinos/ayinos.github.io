@@ -82,6 +82,10 @@ jobs:
             fi
           done
 
+      - name: Show git status & diff
+        run: |
+          git status
+          git diff --name-only
 
       - name: Commit and push generated posts
         run: |
