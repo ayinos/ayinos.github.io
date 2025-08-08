@@ -99,6 +99,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add assets/markmaps _posts
+          git add -A assets/markmaps _posts
           git diff --quiet && echo "No changes" || git commit -m "Auto-generate Markmap post(s)"
           git push https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/ayinos/ayinos.github.io.git HEAD:main
