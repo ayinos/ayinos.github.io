@@ -47,29 +47,33 @@ jobs:
             echo "<iframe src=\"{{ site.baseurl }}/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>" >> "_posts/$filename"
           done
 
-      - name: Wait for GitHub Pages to be free
+      - name: Wait for GitHub Pages to finish current deployment
         run: |
-          echo "Checking if any GitHub Pages deployments are running..."
+          echo "Checking latest GitHub Pages deployment status..."
           while true; do
-            deployments=$(curl -s -H "Authorization: token ${{ secrets.PERSONAL_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/deployments)
+            latest_status=$(curl -s -H "Authorization: token ${{ secrets.PERSONAL_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/deployments \
+              | jq -r '.[0].statuses_url')
 
-            # If deployments isn't a JSON array, break immediately
-            if ! echo "$deployments" | jq -e 'type == "array"' > /dev/null; then
-              echo "Unexpected API response. Skipping wait."
+            if [ "$latest_status" = "null" ] || [ -z "$latest_status" ]; then
+              echo "No deployments found. Continuing..."
               break
             fi
 
-            running=$(echo "$deployments" | jq '[.[] | select(.statuses_url != null) ] | length')
+            state=$(curl -s -H "Authorization: token ${{ secrets.PERSONAL_TOKEN }}" "$latest_status" \
+              | jq -r '.[0].state')
 
-            if [ "$running" -eq 0 ]; then
-              echo "No deployments running. Continuing..."
+            echo "Latest deployment state: $state"
+
+            if [ "$state" = "in_progress" ] || [ "$state" = "queued" ]; then
+              echo "Deployment in progress. Waiting 10s..."
+              sleep 10
+            else
+              echo "Deployment finished with state: $state"
               break
             fi
-
-            echo "$running deployment(s) in progress. Waiting 10s..."
-            sleep 10
           done
+
 
       - name: Commit and push generated posts
         run: |
