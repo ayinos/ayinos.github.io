@@ -23,36 +23,44 @@ jobs:
 
       - name: Generate HTML mindmaps
         run: |
+          set -x
           mkdir -p assets/markmaps
+          ls -l markmap/
           for file in markmap/*.md; do
             name=$(basename "$file" .md)
-            markmap "$file" -o "assets/markmaps/$name.html"
+            echo "Generating HTML for $file"
+            npx markmap-cli "$file" -o "assets/markmaps/$name.html"
+            if [ $? -ne 0 ]; then
+              echo "Error generating $name.html"
+              exit 1
+            fi
           done
+          ls -l assets/markmaps/
 
       - name: Create Jekyll posts with iframes
         run: |
           set -x
           mkdir -p _posts
           for filepath in markmap/*.md; do
-          file=$(basename "$filepath" .md)
-          title=$(echo "$file" | tr '_-' ' ' | sed -E 's/(^| )([a-z])/\U\2/g')
-          date=$(date +%Y-%m-%d)
-          postpath="$(pwd)/_posts/${date}-${file}.html"
+            file=$(basename "$filepath" .md)
+            title=$(echo "$file" | tr '_-' ' ' | sed -E 's/(^| )([a-z])/\U\2/g')
+            date=$(date +%Y-%m-%d)
+            postpath="$(pwd)/_posts/${date}-${file}.html"
 
-          if [ ! -f "$postpath" ] || [ "$filepath" -nt "$postpath" ]; then
-          {
-            echo "---"
-            echo "layout: post"
-              echo "title: \"$title\""
-              echo "date: $date"
-              echo "---"
-              echo ""
-              echo "<iframe src=\"{{ site.baseurl }}/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>"
-          } | tee "$postpath"
-          echo "Generated post for $file at $postpath"
-          else
-          echo "Post for $file is up to date, skipping."
-          fi
+            if [ ! -f "$postpath" ] || [ "$filepath" -nt "$postpath" ]; then
+              {
+                echo "---"
+                echo "layout: post"
+                echo "title: \"$title\""
+                echo "date: $date"
+                echo "---"
+                echo ""
+                echo "<iframe src=\"{{ site.baseurl }}/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>"
+              } | tee "$postpath"
+              echo "Generated post for $file at $postpath"
+            else
+              echo "Post for $file is up to date, skipping."
+            fi
           done
 
       - name: Wait for GitHub Pages to finish current deployment
@@ -93,5 +101,4 @@ jobs:
           git config user.email "github-actions@github.com"
           git add assets/markmaps _posts
           git diff --quiet && echo "No changes" || git commit -m "Auto-generate Markmap post(s)"
-          git push https://x-access-token:${{ secrets.GH_ACTION_TOKEN }}@github.com/ayinos/ayinos.github.io.git HEAD:main
-
+          git push https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/ayinos/ayinos.github.io.git HEAD:main
