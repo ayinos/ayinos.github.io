@@ -31,32 +31,32 @@ jobs:
 
       - name: Create Jekyll posts with iframes
         run: |
+          set -x
           mkdir -p _posts
           for filepath in markmap/*.md; do
-            file=$(basename "$filepath" .md)
-            title=$(echo "$file" | tr '_-' ' ' | sed -E 's/(^| )([a-z])/\U\2/g')
-            date=$(date +%Y-%m-%d)
-            filename="${date}-${file}.html"
-            postpath="_posts/$filename"
+          file=$(basename "$filepath" .md)
+          title=$(echo "$file" | tr '_-' ' ' | sed -E 's/(^| )([a-z])/\U\2/g')
+          date=$(date +%Y-%m-%d)
+          postpath="$(pwd)/_posts/${date}-${file}.html"
 
-            # Only regenerate post if markdown is newer than post or post doesn't exist
-            if [ ! -f "$postpath" ] || [ "$filepath" -nt "$postpath" ]; then
-            {
+          if [ ! -f "$postpath" ] || [ "$filepath" -nt "$postpath" ]; then
+          {
+            echo "---"
+            echo "layout: post"
+              echo "title: \"$title\""
+              echo "date: $date"
               echo "---"
-              echo "layout: post"
-                echo "title: \"$title\""
-                echo "date: $date"
-                echo "---"
-                echo ""
-                echo "<iframe src=\"{{ site.baseurl }}/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>"
-            } > "$postpath"
-            echo "Generated post for $file"
-            else
-            echo "Post for $file is up to date, skipping."
-            fi
+              echo ""
+              echo "<iframe src=\"{{ site.baseurl }}/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>"
+          } | tee "$postpath"
+          echo "Generated post for $file at $postpath"
+          else
+          echo "Post for $file is up to date, skipping."
+          fi
           done
 
-      - name: Wait for GitHub Pages to finish current deployment
+
+- name: Wait for GitHub Pages to finish current deployment
         run: |
           echo "Checking latest GitHub Pages deployment status..."
           while true; do
