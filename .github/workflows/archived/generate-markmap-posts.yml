@@ -1,0 +1,104 @@
+#name: Generate Markmap Posts from Markdown
+#
+#on:
+#  push:
+#    paths:
+#      - 'markmap/*.md'
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '20'
+#
+#      - name: Install markmap-cli
+#        run: npm install -g markmap-cli
+#
+#      - name: Generate HTML mindmaps
+#        run: |
+#          set -x
+#          mkdir -p assets/markmaps
+#          ls -l markmap/
+#          for file in markmap/*.md; do
+#            name=$(basename "$file" .md)
+#            echo "Generating HTML for $file"
+#            npx markmap-cli "$file" -o "assets/markmaps/$name.html"
+#            if [ $? -ne 0 ]; then
+#              echo "Error generating $name.html"
+#              exit 1
+#            fi
+#          done
+#          ls -l assets/markmaps/
+#
+#      - name: Create Jekyll posts with iframes
+#        run: |
+#          set -x
+#          mkdir -p _posts
+#          for filepath in markmap/*.md; do
+#            file=$(basename "$filepath" .md)
+#            title=$(echo "$file" | tr '_-' ' ' | sed -E 's/(^| )([a-z])/\U\2/g')
+#            date=$(date +%Y-%m-%d)
+#            postpath="$(pwd)/_posts/${date}-${file}.html"
+#
+#            if [ ! -f "$postpath" ] || [ "$filepath" -nt "$postpath" ]; then
+#              {
+#                echo "---"
+#                echo "layout: post"
+#                echo "title: \"$title\""
+#                echo "date: $date"
+#                echo "---"
+#                echo ""
+#                echo "<iframe src=\"/assets/markmaps/${file}.html\" width=\"100%\" height=\"600\" style=\"border:none;\"></iframe>"
+#              } | tee "$postpath"
+#              echo "Generated post for $file at $postpath"
+#            else
+#              echo "Post for $file is up to date, skipping."
+#            fi
+#          done
+#
+#      - name: Wait for GitHub Pages to finish current deployment
+#        run: |
+#          echo "Checking latest GitHub Pages deployment status..."
+#          while true; do
+#            latest_status=$(curl -s -H "Authorization: token ${{ secrets.PERSONAL_TOKEN }}" \
+#              https://api.github.com/repos/${{ github.repository }}/deployments \
+#              | jq -r '.[0].statuses_url')
+#
+#            if [ "$latest_status" = "null" ] || [ -z "$latest_status" ]; then
+#              echo "No deployments found. Continuing..."
+#              break
+#            fi
+#
+#            state=$(curl -s -H "Authorization: token ${{ secrets.PERSONAL_TOKEN }}" "$latest_status" \
+#              | jq -r '.[0].state')
+#
+#            echo "Latest deployment state: $state"
+#
+#            if [ "$state" = "in_progress" ] || [ "$state" = "queued" ]; then
+#              echo "Deployment in progress. Waiting 10s..."
+#              sleep 10
+#            else
+#              echo "Deployment finished with state: $state"
+#              break
+#            fi
+#          done
+#
+#      - name: Show git status & diff
+#        run: |
+#          git status
+#          git diff --name-only
+#
+#      - name: Commit and push generated posts
+#        run: |
+#          git config user.name "github-actions"
+#          git config user.email "github-actions@github.com"
+#          git add --all
+#          git diff --cached --quiet && echo "No changes" || git commit -m "Auto-generate Markmap post(s)"
+#          git push https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/ayinos/ayinos.github.io.git HEAD:main
