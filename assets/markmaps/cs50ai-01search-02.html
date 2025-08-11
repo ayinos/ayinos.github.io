@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+html {
+  font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+.markmap-dark {
+  background: #27272a;
+  color: white;
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css">
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script><script>((r) => {
+          setTimeout(r);
+        })(() => {
+  const { markmap, mm } = window;
+  const toolbar = new markmap.Toolbar();
+  toolbar.attach(mm);
+  const el = toolbar.render();
+  el.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+  document.body.append(el);
+})</script><script>((getMarkmap, getOptions, root2, jsonOptions) => {
+              const markmap = getMarkmap();
+              window.mm = markmap.Markmap.create(
+                "svg#mindmap",
+                (getOptions || markmap.deriveOptions)(jsonOptions),
+                root2
+              );
+              if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                document.documentElement.classList.add("markmap-dark");
+              }
+            })(() => window.markmap,null,{"content":"Terminologies","children":[{"content":"agent","children":[{"content":"e.g.","children":[{"content":"car in google maps","children":[],"payload":{"tag":"li","lines":"4,5"}},{"content":"person playing the game in 15 puzzle or tic-tac-toe","children":[],"payload":{"tag":"li","lines":"5,7"}}],"payload":{"tag":"li","lines":"3,7"}}],"payload":{"tag":"h2","lines":"2,3"}},{"content":"state","children":[{"content":"configuration","children":[],"payload":{"tag":"li","lines":"8,9"}},{"content":"e.g. configuration of tiles in 15 puzzle","children":[],"payload":{"tag":"li","lines":"9,11"}}],"payload":{"tag":"h2","lines":"7,8"}},{"content":"intial state","children":[{"content":"state where agent begins","children":[],"payload":{"tag":"li","lines":"12,14"}}],"payload":{"tag":"h2","lines":"11,12"}},{"content":"actions","children":[{"content":"choices that can be made in any given state","children":[],"payload":{"tag":"li","lines":"15,16"}},{"content":"function : actions(s)","children":[{"content":"s : state","children":[],"payload":{"tag":"li","lines":"17,18"}},{"content":"returns : set of actions valid in the given state &apos;s&apos;","children":[],"payload":{"tag":"li","lines":"18,19"}}],"payload":{"tag":"li","lines":"16,19"}},{"content":"e.g. in the 15 puzzle game moving tiles -&gt; or &lt;- or up or down","children":[],"payload":{"tag":"li","lines":"19,21"}}],"payload":{"tag":"h2","lines":"14,15"}},{"content":"transition model","children":[{"content":"description of what state results from performing any applicable action in any state.","children":[],"payload":{"tag":"li","lines":"22,23"}},{"content":"function : result(s,a)","children":[{"content":"s : state","children":[],"payload":{"tag":"li","lines":"24,25"}},{"content":"a : action","children":[],"payload":{"tag":"li","lines":"25,26"}},{"content":"returns : the state we get after performing action &apos;a&apos; in state &apos;s&apos;","children":[],"payload":{"tag":"li","lines":"26,28"}}],"payload":{"tag":"li","lines":"23,28"}}],"payload":{"tag":"h2","lines":"21,22"}},{"content":"state space","children":[{"content":"the set of all the states we can get from the initial state by any sequence of actions","children":[],"payload":{"tag":"li","lines":"29,30"}},{"content":"<img src=\"images/cs50ai-01search-02-graph.png\" alt>","children":[],"payload":{"tag":"li","lines":"30,32"}}],"payload":{"tag":"h2","lines":"28,29"}},{"content":"goal test","children":[{"content":"way to determine whether a given state is a goal state","children":[],"payload":{"tag":"li","lines":"33,34"}},{"content":"e.g. in 15 puzzle, numbers in ascending order or in google maps, state = destination entered by the user.","children":[],"payload":{"tag":"li","lines":"34,35"}},{"content":"some problems may have one goal","children":[],"payload":{"tag":"li","lines":"35,36"}},{"content":"complex problems may have multiple goal states, multiple ways to solve a problem. we may not care which one the AI find as long as it does find.","children":[],"payload":{"tag":"li","lines":"36,38"}}],"payload":{"tag":"h2","lines":"32,33"}},{"content":"path cost","children":[{"content":"numerical cost associated with a given path","children":[],"payload":{"tag":"li","lines":"39,40"}},{"content":"<img src=\"images/cs50ai-01search-02-graphwithpathcosts.png\" alt>","children":[],"payload":{"tag":"li","lines":"40,41"}},{"content":"will only apply for some problems","children":[],"payload":{"tag":"li","lines":"41,42"}},{"content":"does not apply to 15 puzzle since the cost is the same to move the tile","children":[],"payload":{"tag":"li","lines":"42,44"}}],"payload":{"tag":"h2","lines":"38,39"}},{"content":"solution","children":[{"content":"sequence of actions that will take us to the goal state from the","children":[],"payload":{"tag":"li","lines":"45,47"}}],"payload":{"tag":"h2","lines":"44,45"}},{"content":"optimal solution","children":[{"content":"lowest path cost among solutions","children":[],"payload":{"tag":"li","lines":"48,49"}}],"payload":{"tag":"h2","lines":"47,48"}}],"payload":{"tag":"h1","lines":"0,1"}},null)</script>
+</body>
+</html>
