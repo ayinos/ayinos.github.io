@@ -1,5 +1,5 @@
-# Reliable, Scalable & Maintainable Applications
-## Thinking about dta systems
+# 
+## Thinking about data systems
 - Dbs, queues, caches have some similarity but very different access patterns which means different performance 
 characteristics thus very different implementations.
 - Some boundaries between these categories are becoming blurred
@@ -50,13 +50,13 @@ single tool and those different tools are stitched together using application co
 - Fault tolerance techniques can hide certain type of faults from the end user
 ## Scalability
 - Means having strategies to keep performance good even when load increases.
-- Describing Load
-  - can be descried with a few numbers which we call _load parameters_
-    - could be requests per second to a web server
-    - ratio of reads to writes in db
-    - number of simultaneously active users in a chat room
-    - hit rate on a cache
-- Describing performance
+### Describing Load
+- can be described with a few numbers which we call _load parameters_
+  - could be requests per second to a web server
+  - ratio of reads to writes in db
+  - number of simultaneously active users in a chat room
+  - hit rate on a cache
+### Describing performance
   - In a batch processing system we usually care about _throughput_
   - In online systems usually _response time_ is more important
   - Latency & response time
@@ -66,12 +66,27 @@ single tool and those different tools are stitched together using application co
     - for e.g. if median response time (50th percentile) is 200ms means half requests return in < 200ms and half > 200ms
     - Higher percentiles (95th 99th 99.9th) may directly affect users performance because customers with teh the slowest 
     request may have the most data i.e. most purchases.
-  - 
-- In a scalable system you can add processing capacity in order to remain reliable under high load.
-- 
+### Coping with Load
+- How to maintain good performance even when load params increase by some amount?
+- Scaling up (Vertical scaling) Moving to a more powerful machine
+- Scaling out / Horizontal scaling / Shared-nothing architectures : Distributing the load across multiple smaller machines
+- System that can run on a single machine is often simpler but high-end machines can become expensive so scaling out cannot be avoided.
+- The architecture of systems that operate at a large scale is usually highly specific to the application.
+- The problem may be (usually a mix of all)
+  - Volume of reads
+  - Volume of writes
+  - Volume of data to store
+  - Complexity of data
+  - Response time requirements
+  - Access patterns
 ## Maintainability
 - Many facets but in essence its about making like easier for the engineering & operations teams 
-- Good abstractions can help reduce complexity and make system easier to modify & adapt for new use cases.
-- Good operability means having good visibility int the systems healths and having effective ways of managing it.
+- 3 design principles
+  1. Operability (Making life easy for operations)
+     - Good operability means having good visibility int the systems 
+       healths and having effective ways of managing it.
+  2. Simplicity (Managing Complexity)
+     - Good abstractions can help reduce complexity and make system easier to modify & adapt for new use cases.
+  3. Evolvability (Making change easy)
 
 
