@@ -75,3 +75,39 @@ typically message broker based.
        - Polling publisher pattern or
        - Transaction log trailing pattern
     3. Publish the message to the message broker.
+
+## Chapter 04: Managing transactions with sagas
+- Updating data scattered across multiple services
+  - Traditional XA/2PC are not a good fit for modern applications
+  - Better approach is to use saga
+    - A saga is a sequence of local transactions that are co-ordinated using messaging
+    - Each local transaction updates data in a single service
+    - Because each local transaction commits its changes, if a saga must roll back due to the violation of a business 
+    rule, it must execute compensating transactions to explicitly undo changes.
+- 2 approaches to co-ordinate the steps of a saga
+  - Choreography based saga
+    - A local transaction publishes events that trigger other participants to execute local transactions
+    - Simple sagas can use choreography
+  - Orchestration based saga
+    - A centralised saga orchestrator sends command messages to participants telling them to execute local transactions.
+    - Dev & testing can be simplified by modelling saga orchestrators as state machines.
+    - Better approach for complex sagas
+-  Designing saga based business logic can be challenging because unlike ACID transactions, saga are not isolated. 
+Counter measures are needed which are design strategies that prevent concurrency anomalies caused by the ACD transaction 
+model. Application may also need to use locking in order to simplify the business logic, even though that risks deadlocks.
+
+## Chapter 05: Designing business logic
+- Patterns to implement business logic 
+  - For simple business logic: Procedural transaction script pattern
+  - For complex business logic : Object-oriented domain model pattern
+- Good way to organize a service's business logic is as a collection of DDD aggregates. Useful because they
+  - modularize the business model, 
+  - eliminate the possibility of object reference between services and
+  - ensure that each ACID transaction is within a service
+- An aggregate should publish domain events when its created or updated. 
+  - Domain events have a variety of uses
+    - can implement choreography based sagas
+    - can be used to update replicated data
+  - Domain event subscribers can also notify users & other apps & publish WebSocket messages to a user's browser.
+
+## Chapter 06: Developing business logic with event sourcing
