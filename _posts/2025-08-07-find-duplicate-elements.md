@@ -1,6 +1,6 @@
 ---
 title: Find duplicate elements in a list
-date: 2025-07-19 10:43:20 +/-TTTT
+date: 2025-08-07 10:43:20 +/-TTTT
 categories: [Java, Stream API]
 tags: [java8,stream,list,set,filter]     # TAG names should always be lowercase
 ---
