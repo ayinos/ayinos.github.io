@@ -1,4 +1,4 @@
-# 
+# Chapter 01: Reliable, Scalable and Maintainable Applications.
 ## Thinking about data systems
 - Dbs, queues, caches have some similarity but very different access patterns which means different performance 
 characteristics thus very different implementations.

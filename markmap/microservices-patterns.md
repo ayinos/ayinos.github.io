@@ -42,9 +42,10 @@
     - it will typically need to support both old and new versions until its clients have been upgraded.
 - There are numerous IPC technologies each with different trade-offs.One Key design decision is to choose either
   1. Synchronous remote procedure invocation pattern
-     - e.g. REST (Note: While the underlying HTTP protocol used by REST is a request-response model that can be perceived 
-     as synchronous, the client-side implementation determines whether the interaction with the REST API is handled 
-     synchronously or asynchronously.)
+     - e.g. REST 
+       - Note: While the underlying HTTP protocol used by REST is a request-response model that can be perceived 
+       as synchronous, the client-side implementation determines whether the interaction with the REST API is handled 
+       synchronously or asynchronously.
      - easier to use
   2. Asynchronous messaging pattern
      - increases availability
@@ -65,8 +66,8 @@ failures
        - Client side discovery and self registration patterns
          - More work but handles the scenario where services are running on multiple deployment platforms
 - Good way to design a messaging based architecture is to use the messages and channels model, which abstracts the 
-details of the underlying messaging system. You can then map that design to a specific messaging infrastructure which is
-typically message broker based.
+details of the underlying messaging system. You can then map that design to a specific messaging infrastructure which 
+is typically message broker based.
 - One key challenge when using messaging is 
   - To atomically update the db & publish the message.
   - Good solution is to use the Transactional outbox pattern that is
