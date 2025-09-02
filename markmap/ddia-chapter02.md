@@ -20,7 +20,17 @@
   - Specialized query operations that are not well-supported by the relational model
   - Frustration with the restrictiveness of relational schemas and a desire for more dynamic & expressive data models
 ### The Object Relational Mismatch
+- Common criticism of SQL data model 
+  - Objects in the application code ----awkward translation layer----> relational db model of tables, rows & columns.
+- ORM frameworks like ActiveRecord, Hibernate reduce the boilerplate code required by the translation layer but cannot completely hide the differences between the 2 models.
+- 3 ways to represent one-to-many relationship from the user to positions, education, contact info etc. in a resume (LinkedIn profile) in a relational schema
+  1. In traditional model, put _positions_, _education_ & _contact info_ in separate tables with a foreign key reference to the _users_ table. 
+  2. Later versions of SQL added support for structured datatypes & XMl/JSON data, this allowed multi-values data to be stored within a single row, with support for querying & indexing inside the docs.
+  3. Encode jobs, education, contact info as JSON/XML docs & store it on a text column in the db & let application interpret its structure & content. Typically, cannot use the db to query for values inside that encoded column.
+- For a data structure like resume, which is mostly a self-contained document a JSON representation can be quite appropriate. Document-oriented dbs like MongoDB, CouchDB etc support this data model.
+- The JSON representation has better locality than the multi-table schema. No need to perform multiple queries or messy multi-way joins. All relevant info is in one place & one query is sufficient.
 ### Many-to-One & Many-to-Many Relationships
+
 ### Are Document DBs repeating history
 ### Relational vs Document DBs
 
